@@ -4684,7 +4684,7 @@ ParserResult<ClassDecl> Parser::parseDeclClass(SourceLoc ClassLoc,
 ///      protocol-head '{' protocol-member* '}'
 ///
 ///   protocol-head:
-///     'protocol' attribute-list identifier inheritance? 
+///     'protocol' attribute-list identifier generic-params? inheritance?
 ///
 ///   protocol-member:
 ///      decl-func
@@ -4709,13 +4709,20 @@ parseDeclProtocol(ParseDeclOptions Flags, DeclAttributes &Attributes) {
   // Protocols don't support generic parameters, but people often want them and
   // we want to have good error recovery if they try them out.  Parse them and
   // produce a specific diagnostic if present.
-  if (startsWithLess(Tok)) {
-    diagnose(Tok, diag::generic_arguments_protocol);
-    Scope S(this, ScopeKind::Generics);
-    maybeParseGenericParams();
-  }
+//  if (startsWithLess(Tok)) {
+//    diagnose(Tok, diag::generic_arguments_protocol);
+//    Scope S(this, ScopeKind::Generics);
+//    maybeParseGenericParams();
+//  }
 
   DebuggerContextChange DCC (*this);
+
+  // Parse the generic-params, if present.
+  GenericParamList *GenericParams = nullptr;
+  {
+    Scope S(this, ScopeKind::Generics);
+    GenericParams = maybeParseGenericParams();
+  }
   
   // Parse optional inheritance clause.
   SmallVector<TypeLoc, 4> InheritedProtocols;
@@ -4728,7 +4735,7 @@ parseDeclProtocol(ParseDeclOptions Flags, DeclAttributes &Attributes) {
 
   ProtocolDecl *Proto
     = new (Context) ProtocolDecl(CurDeclContext, ProtocolLoc, NameLoc,
-                                 ProtocolName,
+                                 ProtocolName, GenericParams,
                                  Context.AllocateCopy(InheritedProtocols));
   // No need to setLocalDiscriminator: protocols can't appear in local contexts.
 

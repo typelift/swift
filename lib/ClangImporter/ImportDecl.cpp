@@ -4624,7 +4624,7 @@ namespace {
                                    dc,
                                    Impl.importSourceLoc(decl->getLocStart()),
                                    Impl.importSourceLoc(decl->getLocation()),
-                                   name,
+                                   name, nullptr,
                                    None);
       result->computeType();
       addObjCAttribute(result, Impl.importIdentifier(decl->getIdentifier()));

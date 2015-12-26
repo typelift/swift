@@ -3372,7 +3372,8 @@ class ProtocolDecl : public NominalTypeDecl {
 
 public:
   ProtocolDecl(DeclContext *DC, SourceLoc ProtocolLoc, SourceLoc NameLoc,
-               Identifier Name, MutableArrayRef<TypeLoc> Inherited);
+               Identifier Name, GenericParamList *GenericParams,
+               MutableArrayRef<TypeLoc> Inherited);
   
   using Decl::getASTContext;
 
@@ -3523,6 +3524,8 @@ public:
     return isa<NominalTypeDecl>(C) && classof(cast<NominalTypeDecl>(C));
   }
 };
+
+
 
 // Note that the values of these enums line up with %select values in
 // diagnostics.

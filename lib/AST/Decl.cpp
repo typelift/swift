@@ -2442,9 +2442,10 @@ bool EnumDecl::hasOnlyCasesWithoutAssociatedValues() const {
 
 ProtocolDecl::ProtocolDecl(DeclContext *DC, SourceLoc ProtocolLoc,
                            SourceLoc NameLoc, Identifier Name,
+                           GenericParamList *GenericParams,
                            MutableArrayRef<TypeLoc> Inherited)
   : NominalTypeDecl(DeclKind::Protocol, DC, Name, NameLoc, Inherited,
-                    nullptr),
+                    GenericParams),
     ProtocolLoc(ProtocolLoc)
 {
   ProtocolDeclBits.RequiresClassValid = false;
