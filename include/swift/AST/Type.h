@@ -34,6 +34,7 @@ class ClassDecl;
 class CanType;
 class EnumDecl;
 class GenericSignature;
+class KindOfType;
 class LazyResolver;
 class ModuleDecl;
 class NominalTypeDecl;
@@ -150,7 +151,10 @@ public:
 
   /// Get the canonical type, or return null if the type is null.
   CanType getCanonicalTypeOrNull() const; // in Types.h
-  
+
+  /// Get the kind of the type.
+  KindOfType *getKindOfType(const ASTContext &context) const; // in Types.h
+
 private:
   // Direct comparison is disabled for types, because they may not be canonical.
   void operator==(Type T) const = delete;
@@ -173,6 +177,8 @@ class CanType : public Type {
   static void getAnyExistentialTypeProtocolsImpl(CanType type,
                                     SmallVectorImpl<ProtocolDecl*> &protocols);
   static bool isObjCExistentialTypeImpl(CanType type);
+  static bool isKindOfTypeImpl(CanType type);
+
   static CanType getAnyOptionalObjectTypeImpl(CanType type,
                                               OptionalTypeKind &kind);
   static CanType getReferenceStorageReferentImpl(CanType type);
@@ -239,6 +245,10 @@ public:
   /// Is this an ObjC-compatible existential type?
   bool isObjCExistentialType() const {
     return isObjCExistentialTypeImpl(*this);
+  }
+
+  bool isKindOfType() const {
+    return isKindOfTypeImpl(*this);
   }
 
   ClassDecl *getClassOrBoundGenericClass() const; // in Types.h

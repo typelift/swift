@@ -85,6 +85,7 @@
 
 UNCHECKED_TYPE(Error, Type)
 UNCHECKED_TYPE(Unresolved, Type)
+UNCHECKED_TYPE(KindOf, Type)
 ABSTRACT_TYPE(Builtin, Type)
   BUILTIN_TYPE(BuiltinInteger, BuiltinType)
   BUILTIN_TYPE(BuiltinFloat, BuiltinType)

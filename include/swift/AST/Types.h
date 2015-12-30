@@ -22,6 +22,7 @@
 #include "swift/AST/Ownership.h"
 #include "swift/AST/Requirement.h"
 #include "swift/AST/Type.h"
+#include "swift/AST/Decl.h"
 #include "swift/AST/Identifier.h"
 #include "swift/Basic/ArrayRefView.h"
 #include "swift/Basic/UUID.h"
@@ -1204,7 +1205,33 @@ public:
   }
 };
 DEFINE_EMPTY_CAN_TYPE_WRAPPER(BuiltinFloatType, BuiltinType)
-  
+
+/// KindOfType - This is a linked-list value representing the "type of a type".
+class KindOfType : public TypeBase {
+  friend class ASTContext;
+
+  // * -> *
+  KindOfType *ArrowKinds;
+  // (*)
+  KindOfType *NextKind;
+
+public:
+  KindOfType(KindOfType *arr = nullptr, KindOfType *next = nullptr)
+    : TypeBase(TypeKind::KindOf, nullptr, RecursiveTypeProperties()),
+      ArrowKinds(arr), NextKind(next) {}
+
+  static KindOfType *get(const ASTContext &C);
+  static KindOfType *get(KindOfType *arr, KindOfType *next, const ASTContext &C);
+
+  KindOfType *getArrowKinds() const { return ArrowKinds; }
+  KindOfType *getNextKind() const { return NextKind; }
+
+  // Implement isa/cast/dyncast/etc.
+  static bool classof(const TypeBase *T) {
+    return T->getKind() == TypeKind::KindOf;
+  }
+};
+
 /// NameAliasType - An alias type is a name for another type, just like a
 /// typedef in C.
 class NameAliasType : public TypeBase {
@@ -4205,6 +4232,10 @@ inline bool CanType::isAnyExistentialTypeImpl(CanType type) {
   return isExistentialTypeImpl(type) || isa<ExistentialMetatypeType>(type);
 }
 
+inline bool CanType::isKindOfTypeImpl(CanType type) {
+  return isa<KindOfType>(type);
+}
+
 inline bool TypeBase::isClassExistentialType() {
   CanType T = getCanonicalType();
   if (auto pt = dyn_cast<ProtocolType>(T))
@@ -4416,6 +4447,24 @@ inline SubstitutableType *SubstitutableType::getParent() const {
 
 inline CanType Type::getCanonicalTypeOrNull() const {
   return isNull() ? CanType() : getPointer()->getCanonicalType();
+}
+
+inline KindOfType *Type::getKindOfType(const ASTContext &context) const {
+  KindOfType *kind = KindOfType::get(context);
+  if (auto Nominal = dyn_cast<NominalType>(this->getPointer())) {
+    // If generic, iterate over params and build out the Kind
+    for (auto req : Nominal->getDecl()->getGenericRequirements()) {
+      // If the parameter has a protocol constraint, recur and build an arrow.
+      if (req.getKind() == RequirementKind::Conformance) {
+        KindOfType *protoArr = req.getSecondType().getKindOfType(context);
+        kind = KindOfType::get(protoArr, kind, context);
+      } else {
+        // Else build a kind.
+        kind = KindOfType::get(nullptr, kind, context);
+      }
+    }
+  }
+  return kind;
 }
 
 inline bool TypeBase::hasDependentProtocolConformances() {

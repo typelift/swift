@@ -2323,6 +2323,15 @@ BuiltinVectorType *BuiltinVectorType::get(const ASTContext &context,
   return vecTy;
 }
 
+KindOfType *KindOfType::get(const ASTContext &C) {
+  KindOfType *Result = new (C, AllocationArena::Permanent) KindOfType();
+  return Result;
+}
+
+KindOfType *KindOfType::get(KindOfType *arr, KindOfType *next, const ASTContext &C) {
+  KindOfType *Result = new (C, AllocationArena::Permanent) KindOfType(arr, next);
+  return Result;
+}
 
 ParenType *ParenType::get(const ASTContext &C, Type underlying) {
   auto properties = underlying->getRecursiveProperties();
