@@ -25,3 +25,7 @@ extension X {
 extension X.Inner {
   func foo(other: Self) { } // expected-error{{'Self' is only available in a protocol or as the result of a method in a class; did you mean 'Inner'?}}{{19-23=Inner}}
 }
+
+protocol Functor<A> {
+	func fmap<B>(f : A -> B) -> Self<B>
+}
