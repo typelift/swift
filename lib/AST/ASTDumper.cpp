@@ -2424,6 +2424,23 @@ namespace {
       OS << ")";
     }
 
+    void visitKindOfType(KindOfType *K, StringRef label) {
+      printCommon(K, label, "kind_type");
+      while (K != nullptr) {
+        if (auto arr = K->getArrowKinds()) {
+          OS << "(";
+          printRec(arr);
+          OS << ")";
+        } else {
+          OS << "*";
+        }
+        K = K->getNextKind();
+        if (K != nullptr) {
+          OS << " -> ";
+        }
+      }
+    }
+
     void visitTupleType(TupleType *T, StringRef label) {
       printCommon(T, label, "tuple_type");
       printField("num_elements", T->getNumElements());

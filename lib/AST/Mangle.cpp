@@ -893,6 +893,9 @@ void Mangler::mangleType(Type type, ResilienceExpansion explosion,
          "expecting canonical types when not mangling for the debugger");
   TypeBase *tybase = type.getPointer();
   switch (type->getKind()) {
+  case TypeKind::KindOf:
+    llvm_unreachable("mangling kind");
+      
   case TypeKind::TypeVariable:
     llvm_unreachable("mangling type variable");
 

@@ -3139,6 +3139,7 @@ void Serializer::writeType(Type ty) {
     break;
   }
 
+  case TypeKind::KindOf:
   case TypeKind::TypeVariable:
     llvm_unreachable("type variables should not escape the type checker");
   }

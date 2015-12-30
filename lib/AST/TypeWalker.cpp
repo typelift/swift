@@ -36,7 +36,8 @@ class Traversal : public TypeVisitor<Traversal, bool>
   bool visitUnresolvedType(UnresolvedType *ty) { return false; }
   bool visitBuiltinType(BuiltinType *ty) { return false; }
   bool visitNameAliasType(NameAliasType *ty) { return false; }
-
+  bool visitKindOfType(KindOfType *kindTy) { return false; }
+  
   bool visitParenType(ParenType *ty) {
     return doIt(ty->getUnderlyingType());
   }

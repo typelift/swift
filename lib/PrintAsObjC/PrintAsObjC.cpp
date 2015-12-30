@@ -1147,6 +1147,10 @@ private:
     os << "void";
   }
 
+  void visitKindOfType(KindOfType *K, Optional<OptionalTypeKind> optionalKind) {
+    os << "kind";
+  }
+
   void visitParenType(ParenType *PT, Optional<OptionalTypeKind> optionalKind) {
     visitPart(PT->getSinglyDesugaredType(), optionalKind);
   }

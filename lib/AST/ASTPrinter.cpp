@@ -2616,6 +2616,22 @@ public:
     Printer << ")";
   }
 
+  void visitKindOfType(KindOfType *K) {
+    while (K != nullptr) {
+      if (auto arr = K->getArrowKinds()) {
+        Printer << "(";
+        visit(arr);
+        Printer << ")";
+      } else {
+        Printer << "*";
+      }
+      K = K->getNextKind();
+      if (K != nullptr) {
+        Printer << " -> ";
+      }
+    }
+  }
+  
   void visitTupleType(TupleType *T) {
     Printer << "(";
 
