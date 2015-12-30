@@ -1777,6 +1777,7 @@ llvm::DIType *IRGenDebugInfo::createType(DebugTypeInfo DbgTy,
 
   // The following types exist primarily for internal use by the type
   // checker.
+  case TypeKind::KindOf:
   case TypeKind::AssociatedType:
   case TypeKind::Error:
   case TypeKind::Unresolved:

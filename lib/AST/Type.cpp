@@ -118,6 +118,7 @@ bool CanType::isReferenceTypeImpl(CanType type, bool functionsCount) {
   case TypeKind::SILBlockStorage:
   case TypeKind::Error:
   case TypeKind::Unresolved:
+  case TypeKind::KindOf:
   case TypeKind::BuiltinInteger:
   case TypeKind::BuiltinFloat:
   case TypeKind::BuiltinRawPointer:
@@ -383,6 +384,7 @@ bool TypeBase::isUnspecializedGeneric() {
 
   case TypeKind::Error:
   case TypeKind::Unresolved:
+  case TypeKind::KindOf:
   case TypeKind::TypeVariable:
     llvm_unreachable("querying invalid type");
 
@@ -1098,6 +1100,7 @@ CanType TypeBase::getCanonicalType() {
   case TypeKind::Error:
   case TypeKind::Unresolved:
   case TypeKind::TypeVariable:
+  case TypeKind::KindOf:
     llvm_unreachable("these types are always canonical");
 
 #define SUGARED_TYPE(id, parent) \
@@ -2622,6 +2625,7 @@ case TypeKind::Id:
 #include "swift/AST/TypeNodes.def"
   case TypeKind::Error:
   case TypeKind::Unresolved:
+  case TypeKind::KindOf:
   case TypeKind::TypeVariable:
   case TypeKind::AssociatedType:
   case TypeKind::GenericTypeParam:
@@ -3232,6 +3236,7 @@ bool TypeBase::usesNativeReferenceCounting(ResilienceExpansion resilience) {
   case TypeKind::SILBlockStorage:
   case TypeKind::Error:
   case TypeKind::Unresolved:
+  case TypeKind::KindOf:
   case TypeKind::BuiltinInteger:
   case TypeKind::BuiltinFloat:
   case TypeKind::BuiltinRawPointer:

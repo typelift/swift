@@ -1434,6 +1434,10 @@ ConstraintSystem::matchTypes(Type type1, Type type2, TypeMatchKind kind,
     case TypeKind::Unresolved:
       return SolutionKind::Error;
 
+    // FIXME: Check kinds here; provide solution set.
+    case TypeKind::KindOf:
+      return SolutionKind::Error;
+
     case TypeKind::GenericTypeParam:
     case TypeKind::DependentMember:
       llvm_unreachable("unmapped dependent type in type checker");
@@ -2143,6 +2147,10 @@ ConstraintSystem::simplifyConstructionConstraint(Type valueType,
     
   case TypeKind::Unresolved:
   case TypeKind::Error:
+    return SolutionKind::Error;
+
+  // FIXME: Check kinds here; simplify solution set.
+  case TypeKind::KindOf:
     return SolutionKind::Error;
 
   case TypeKind::GenericFunction:
