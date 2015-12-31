@@ -153,7 +153,7 @@ public:
   CanType getCanonicalTypeOrNull() const; // in Types.h
 
   /// Get the kind of the type.
-  KindOfType *getKindOfType(const ASTContext &context) const; // in Types.h
+  KindOfType *getKindOfType() const; // in Types.h
 
 private:
   // Direct comparison is disabled for types, because they may not be canonical.

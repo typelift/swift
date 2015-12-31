@@ -4449,7 +4449,8 @@ inline CanType Type::getCanonicalTypeOrNull() const {
   return isNull() ? CanType() : getPointer()->getCanonicalType();
 }
 
-inline KindOfType *Type::getKindOfType(const ASTContext &context) const {
+inline KindOfType *Type::getKindOfType() const {
+  ASTContext &context = this->getCanonicalTypeOrNull()->getASTContext();
   KindOfType *kind = KindOfType::get(context);
   if (auto Nominal = dyn_cast<NominalType>(this->getPointer())) {
     // If generic, iterate over params and build out the Kind
