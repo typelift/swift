@@ -4450,6 +4450,11 @@ inline CanType Type::getCanonicalTypeOrNull() const {
 }
 
 inline KindOfType *Type::getKindOfType() const {
+  // If we're already a kind, there's no sense asking for our kind.
+  if (auto Kind = dyn_cast<KindOfType>(this->getPointer())) {
+    return Kind;
+  }
+
   ASTContext &context = this->getCanonicalTypeOrNull()->getASTContext();
   KindOfType *kind = KindOfType::get(context);
   if (auto Nominal = dyn_cast<NominalType>(this->getPointer())) {

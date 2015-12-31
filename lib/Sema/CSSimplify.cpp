@@ -1065,6 +1065,48 @@ ConstraintSystem::matchExistentialTypes(Type type1, Type type2,
   return SolutionKind::Solved;
 }
 
+/// \brief Try to match kinds structurally.  This match will never return an unsolved solution.
+ConstraintSystem::SolutionKind
+ConstraintSystem::matchKinds(Type type1, Type type2,
+                                        ConstraintLocatorBuilder locator) {
+  KindOfType *kind1 = type1.getKindOfType();
+  KindOfType *kind2 = type2.getKindOfType();
+
+  assert(kind1 != nullptr && "first type has no kind!");
+  assert(kind2 != nullptr && "second type has no kind!");
+
+  while (kind1 != nullptr && kind2 != nullptr) {
+    // If one kind is an arrow and the other isn't we're done here.
+    if (kind1->getArrowKinds() == nullptr ^ kind2->getArrowKinds() == nullptr) {
+      return SolutionKind::Error;
+    }
+
+    // Recur matching into the arrow.
+    if (kind1->getArrowKinds() != nullptr /* && kind2->getArrowKinds() != nullptr */) {
+      switch (matchKinds(kind1, kind2, locator)) {
+        case SolutionKind::Solved:
+          break;
+        case SolutionKind::Error:
+          return SolutionKind::Error;
+          break;
+        case SolutionKind::Unsolved:
+          assert(false && "kind match produced an unsolved solution.");
+          break;
+      }
+    }
+
+    // Turn, turn, turn.
+    kind1 = kind1->getNextKind();
+    kind2 = kind2->getNextKind();
+
+    // If one kind has more structure than the other we're done here.
+    if (kind1 == nullptr ^ kind2 == nullptr) {
+      return SolutionKind::Error;
+    }
+  }
+  return SolutionKind::Solved;
+}
+
 /// \brief Map a type-matching kind to a constraint kind.
 static ConstraintKind getConstraintKind(TypeMatchKind kind) {
   switch (kind) {
