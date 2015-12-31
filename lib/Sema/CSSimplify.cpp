@@ -1083,7 +1083,7 @@ ConstraintSystem::matchKinds(Type type1, Type type2,
 
     // Recur matching into the arrow.
     if (kind1->getArrowKinds() != nullptr /* && kind2->getArrowKinds() != nullptr */) {
-      switch (matchKinds(kind1, kind2, locator)) {
+      switch (matchKinds(kind1->getArrowKinds(), kind2->getArrowKinds(), locator)) {
         case SolutionKind::Solved:
           break;
         case SolutionKind::Error:
@@ -1234,6 +1234,15 @@ ConstraintSystem::matchTypes(Type type1, Type type2, TypeMatchKind kind,
   // If the types are obviously equivalent, we're done.
   if (kind != TypeMatchKind::ConformsTo && desugar1->isEqual(desugar2))
     return SolutionKind::Solved;
+
+  switch (matchKinds(desugar1, desugar2, locator)) {
+    case ConstraintSystem::SolutionKind::Error:
+      return ConstraintSystem::SolutionKind::Error;
+
+    case ConstraintSystem::SolutionKind::Solved:
+    case ConstraintSystem::SolutionKind::Unsolved:
+      break;
+  }
 
   // If either (or both) types are type variables, unify the type variables.
   if (typeVar1 || typeVar2) {
