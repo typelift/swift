@@ -4457,7 +4457,7 @@ inline KindOfType *Type::getKindOfType() const {
     for (auto req : Nominal->getDecl()->getGenericRequirements()) {
       // If the parameter has a protocol constraint, recur and build an arrow.
       if (req.getKind() == RequirementKind::Conformance) {
-        KindOfType *protoArr = req.getSecondType().getKindOfType(context);
+        KindOfType *protoArr = req.getSecondType().getKindOfType();
         kind = KindOfType::get(protoArr, kind, context);
       } else {
         // Else build a kind.

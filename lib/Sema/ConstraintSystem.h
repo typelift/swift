@@ -567,6 +567,8 @@ enum class TypeMatchKind : char {
   /// \brief Require the types to match exactly, but strips lvalueness from
   /// a type when binding to a type variable.
   SameType,
+  /// \brief Require the kinds of the types to match exactly.
+  SameKind,
   /// \brief Require that the first type conform to the second type (which
   /// must be a protocol).
   ConformsTo,
@@ -2153,6 +2155,10 @@ public: // FIXME: public due to statics in CSSimplify.cpp
   /// \returns the result of attempting to solve this constraint.
   SolutionKind matchTypes(Type type1, Type type2, TypeMatchKind kind,
                           unsigned flags, ConstraintLocatorBuilder locator);
+
+  /// \brief Attempt to match up the kinds \c kind1 and \c kind2, which in effect
+  /// is structural equality on linked lists.
+  SolutionKind matchKinds(Type kind1, Type kind2, ConstraintLocatorBuilder locator);
 
 public:
   /// \brief Resolve the given overload set to the given choice.

@@ -580,6 +580,7 @@ matchCallArguments(ConstraintSystem &cs, TypeMatchKind kind,
   case TypeMatchKind::BindParamType:
   case TypeMatchKind::BindToPointerType:
   case TypeMatchKind::SameType:
+  case TypeMatchKind::SameKind:
   case TypeMatchKind::ConformsTo:
   case TypeMatchKind::Subtype:
     llvm_unreachable("Not an call argument constraint");
@@ -741,6 +742,7 @@ ConstraintSystem::matchTupleTypes(TupleType *tuple1, TupleType *tuple2,
   case TypeMatchKind::BindParamType:
   case TypeMatchKind::BindToPointerType:
   case TypeMatchKind::SameType:
+  case TypeMatchKind::SameKind:
   case TypeMatchKind::Subtype:
   case TypeMatchKind::ConformsTo:
     llvm_unreachable("Not a conversion");
@@ -846,6 +848,7 @@ static bool matchFunctionRepresentations(FunctionTypeRepresentation rep1,
   case TypeMatchKind::BindParamType:
   case TypeMatchKind::BindToPointerType:
   case TypeMatchKind::SameType:
+  case TypeMatchKind::SameKind:
     return rep1 != rep2;
 
   case TypeMatchKind::ConformsTo:
@@ -904,6 +907,7 @@ ConstraintSystem::matchFunctionTypes(FunctionType *func1, FunctionType *func2,
   case TypeMatchKind::BindParamType:
   case TypeMatchKind::BindToPointerType:
   case TypeMatchKind::SameType:
+  case TypeMatchKind::SameKind:
     subKind = kind;
     break;
 
@@ -1071,6 +1075,7 @@ static ConstraintKind getConstraintKind(TypeMatchKind kind) {
   case TypeMatchKind::BindParamType:
     return ConstraintKind::BindParam;
 
+  case TypeMatchKind::SameKind:
   case TypeMatchKind::SameType:
     return ConstraintKind::Equal;
 
@@ -1353,6 +1358,7 @@ ConstraintSystem::matchTypes(Type type1, Type type2, TypeMatchKind kind,
       }
       SWIFT_FALLTHROUGH;
 
+    case TypeMatchKind::SameKind:
     case TypeMatchKind::ConformsTo:
     case TypeMatchKind::Subtype:
     case TypeMatchKind::Conversion:
