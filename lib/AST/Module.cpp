@@ -79,6 +79,7 @@ void BuiltinUnit::LookupCache::lookupValue(
       TypeAliasDecl *TAD = new (Ctx) TypeAliasDecl(SourceLoc(), Name,
                                                    SourceLoc(),
                                                    TypeLoc::withoutLoc(Ty),
+                                                   nullptr,
                                                    const_cast<BuiltinUnit*>(&M));
       TAD->computeType();
       TAD->setAccessibility(Accessibility::Public);

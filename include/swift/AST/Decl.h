@@ -2372,53 +2372,6 @@ public:
   }
 };
 
-/// TypeAliasDecl - This is a declaration of a typealias, for example:
-///
-///    typealias foo = int
-///
-/// TypeAliasDecl's always have 'MetatypeType' type.
-///
-class TypeAliasDecl : public TypeDecl {
-  /// The type that represents this (sugared) name alias.
-  mutable NameAliasType *AliasTy;
-
-  SourceLoc TypeAliasLoc; // The location of the 'typealias' keyword
-  TypeLoc UnderlyingTy;
-
-public:
-  TypeAliasDecl(SourceLoc TypeAliasLoc, Identifier Name,
-                SourceLoc NameLoc, TypeLoc UnderlyingTy,
-                DeclContext *DC);
-
-  SourceLoc getStartLoc() const { return TypeAliasLoc; }
-  SourceRange getSourceRange() const;
-
-  /// getUnderlyingType - Returns the underlying type, which is
-  /// assumed to have been set.
-  Type getUnderlyingType() const {
-    assert(!UnderlyingTy.getType().isNull() &&
-           "getting invalid underlying type");
-    return UnderlyingTy.getType();
-  }
-
-  /// computeType - Compute the type (and declared type) of this type alias;
-  /// can only be called after the alias type has been resolved.
-  void computeType();
-
-  /// \brief Determine whether this type alias has an underlying type.
-  bool hasUnderlyingType() const { return !UnderlyingTy.getType().isNull(); }
-
-  TypeLoc &getUnderlyingTypeLoc() { return UnderlyingTy; }
-  const TypeLoc &getUnderlyingTypeLoc() const { return UnderlyingTy; }
-
-  /// getAliasType - Return the sugared version of this decl as a Type.
-  NameAliasType *getAliasType() const { return AliasTy; }
-
-  static bool classof(const Decl *D) {
-    return D->getKind() == DeclKind::TypeAlias;
-  }
-};
-
 /// Abstract class describing generic type parameters and associated types,
 /// whose common purpose is to anchor the abstract type parameter and specify
 /// requirements for any corresponding type argument.
@@ -2987,6 +2940,53 @@ public:
   static bool classof(const ExtensionDecl *D) { return false; }
 
   using DeclContext::operator new;
+};
+
+/// TypeAliasDecl - This is a declaration of a typealias, for example:
+///
+///    typealias Result<T> = Either<T, ErrorType>
+///
+/// TypeAliasDecl's always have 'MetatypeType' type.
+///
+class TypeAliasDecl : public NominalTypeDecl {
+  /// The type that represents this (sugared) name alias.
+  mutable NameAliasType *AliasTy;
+
+  SourceLoc TypeAliasLoc; // The location of the 'typealias' keyword
+  TypeLoc UnderlyingTy;
+
+public:
+  TypeAliasDecl(SourceLoc TypeAliasLoc, Identifier Name,
+                SourceLoc NameLoc, TypeLoc UnderlyingTy,
+                GenericParamList *GenericParams, DeclContext *DC);
+
+  SourceLoc getStartLoc() const { return TypeAliasLoc; }
+  SourceRange getSourceRange() const;
+
+  /// getUnderlyingType - Returns the underlying type, which is
+  /// assumed to have been set.
+  Type getUnderlyingType() const {
+    assert(!UnderlyingTy.getType().isNull() &&
+           "getting invalid underlying type");
+    return UnderlyingTy.getType();
+  }
+
+  /// computeType - Compute the type (and declared type) of this type alias;
+  /// can only be called after the alias type has been resolved.
+  void computeType();
+
+  /// \brief Determine whether this type alias has an underlying type.
+  bool hasUnderlyingType() const { return !UnderlyingTy.getType().isNull(); }
+
+  TypeLoc &getUnderlyingTypeLoc() { return UnderlyingTy; }
+  const TypeLoc &getUnderlyingTypeLoc() const { return UnderlyingTy; }
+
+  /// getAliasType - Return the sugared version of this decl as a Type.
+  NameAliasType *getAliasType() const { return AliasTy; }
+  
+  static bool classof(const Decl *D) {
+    return D->getKind() == DeclKind::TypeAlias;
+  }
 };
 
 /// \brief This is the declaration of an enum.

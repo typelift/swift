@@ -1419,6 +1419,7 @@ namespace {
                     importedName.Alias.getBaseName(),
                     Impl.importSourceLoc(Decl->getLocation()),
                     TypeLoc::withoutLoc(SwiftType),
+                    nullptr,
                     DC);
 
                 aliasWithoutRef->computeType();
@@ -1494,6 +1495,7 @@ namespace {
                                       Name,
                                       Loc,
                                       TypeLoc::withoutLoc(SwiftType),
+                                      nullptr,
                                       DC);
       Result->computeType();
 

@@ -2662,7 +2662,7 @@ ParserResult<IfConfigDecl> Parser::parseDeclIfConfig(ParseDeclOptions Flags) {
 ///
 /// \verbatim
 ///   decl-typealias:
-///     'typealias' identifier inheritance? '=' type
+///     'typealias' identifier generic-params? inheritance? '=' type
 /// \endverbatim
 ParserResult<TypeDecl> Parser::parseDeclTypeAlias(bool WantDefinition,
                                                   bool isAssociatedType,
@@ -2678,7 +2678,14 @@ ParserResult<TypeDecl> Parser::parseDeclTypeAlias(bool WantDefinition,
                               diag::expected_identifier_in_decl, "typealias");
   if (Status.isError())
     return nullptr;
-    
+
+  // Parse the generic-params, if present.
+  GenericParamList *GenericParams = nullptr;
+  if (!isAssociatedType) {
+    Scope S(this, ScopeKind::Generics);
+    GenericParams = maybeParseGenericParams();
+  }
+
   DebuggerContextChange DCC(*this, Id, DeclKind::TypeAlias);
 
   // Parse optional inheritance clause.
@@ -2716,7 +2723,7 @@ ParserResult<TypeDecl> Parser::parseDeclTypeAlias(bool WantDefinition,
   TypeAliasDecl *TAD =
     new (Context) TypeAliasDecl(TypeAliasLoc, Id, IdLoc,
                                 UnderlyingTy.getPtrOrNull(),
-                                CurDeclContext);
+                                GenericParams, CurDeclContext);
   TAD->getAttrs() = Attributes;
   addToScope(TAD);
   return DCC.fixupParserResult(Status, TAD);

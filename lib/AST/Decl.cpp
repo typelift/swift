@@ -1153,6 +1153,7 @@ static bool isPolymorphic(const AbstractStorageDecl *storage) {
 #include "swift/AST/DeclNodes.def"
     llvm_unreachable("not a nominal type!");
 
+  case DeclKind::TypeAlias:
   case DeclKind::Struct:
   case DeclKind::Enum:
     return false;
@@ -2043,8 +2044,8 @@ OptionalTypeKind NominalTypeDecl::classifyAsOptionalType() const {
 
 TypeAliasDecl::TypeAliasDecl(SourceLoc TypeAliasLoc, Identifier Name,
                              SourceLoc NameLoc, TypeLoc UnderlyingTy,
-                             DeclContext *DC)
-  : TypeDecl(DeclKind::TypeAlias, DC, Name, NameLoc, {}),
+                             GenericParamList *GenericParams, DeclContext *DC)
+  : NominalTypeDecl(DeclKind::TypeAlias, DC, Name, NameLoc, {}, GenericParams),
     TypeAliasLoc(TypeAliasLoc),
     UnderlyingTy(UnderlyingTy)
 {

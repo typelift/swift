@@ -2064,9 +2064,28 @@ Decl *ModuleFile::getDecl(DeclID DID, Optional<DeclContext *> ForcedContext) {
     if (declOrOffset.isComplete())
       return declOrOffset;
 
+    auto genericParams = maybeReadGenericParams(DC, DeclTypeCursor);
+    if (declOrOffset.isComplete())
+      return declOrOffset;
+
     auto alias = createDecl<TypeAliasDecl>(SourceLoc(), getIdentifier(nameID),
-                                           SourceLoc(), underlyingType, DC);
+                                           SourceLoc(), underlyingType, genericParams, DC);
     declOrOffset = alias;
+
+    if (genericParams) {
+      SmallVector<GenericTypeParamType *, 4> paramTypes;
+      for (auto &genericParam : *alias->getGenericParams()) {
+        paramTypes.push_back(genericParam->getDeclaredType()
+                             ->castTo<GenericTypeParamType>());
+      }
+
+      // Read the generic requirements.
+      SmallVector<Requirement, 4> requirements;
+      readGenericRequirements(requirements);
+
+      auto sig = GenericSignature::get(paramTypes, requirements);
+      alias->setGenericSignature(sig);
+    }
 
     alias->computeType();
 
